@@ -24,6 +24,7 @@ code {
   border-top: 2px solid white;
   display: flex;
   align-items: center;
+  padding-left: 40px;
 }
 
 .text-input input {
@@ -36,7 +37,7 @@ code {
 
 .text-input button {
   border-radius: 20px;
-  width: 40px;
+  width: 30px;
   height: 60%;
 }
 
