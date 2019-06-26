@@ -1,3 +1,7 @@
+*{
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -10,4 +14,33 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.text-input {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  border-top: 2px solid white;
+  display: flex;
+  align-items: center;
+}
+
+.text-input input {
+  width: calc(100% - 150px);
+  height: 60%;
+  font-size: 12px;
+  border-radius: 20px;
+  padding-left: 20px;
+}
+
+.text-input button {
+  border-radius: 20px;
+  width: 40px;
+  height: 60%;
+}
+
+.text-input button:hover {
+  background: grey;
+  color: white;
 }
