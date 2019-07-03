@@ -4,7 +4,9 @@
   box-sizing: border-box;
 }
 
-
+.App {
+  height: 100vh;
+}
 
 body {
   text-align: center;
@@ -61,7 +63,7 @@ body {
   align-items: center;
 }
 
-.text-input input {
+.text-input > input {
   width: calc(100% - 50px);
   height: 60%;
   font-size: 12px;
@@ -70,9 +72,10 @@ body {
   padding-left: 10px;
   background: black;
   border: 1px solid white;
+  outline: none;
 }
 
-.text-input .button {
+.text-input > button {
   border-radius: 15px;
   width: 25px;
   height: 50%;
@@ -82,10 +85,81 @@ body {
   justify-content: center;
   background: white;
   color: black;
+  outline: none;
 }
 
-.text-input .button:hover {
+.text-input > button:hover {
   background: #53b1e1;
   color: white;
   border: 1px solid black;
+}
+
+.text-input > button[disabled] {
+  background: black;
+  color: white;
+}
+
+.messages {
+  overflow: auto;
+  height: calc(100% - 138px);
+}
+
+.bubble-wrap{
+  width:100%;
+  padding:8px 20px;
+  display:flex;
+  position: relative;
+}
+
+.bubble-wrap[from="me"] {
+  flex-direction:row-reverse;
+}
+
+.bubble{
+  border-radius:11px;
+  padding: 8px 12px;
+  font-size: 14px;
+  position:relative;
+  border: 1px solid #606060;
+  margin-left:5px;
+}
+
+.bubble:before{
+  content:"";
+  width:12px;
+  height:12px;
+  transform:rotate(45deg);
+  background:black;
+  border: 1px solid #606060;
+  position:absolute;
+  left:-6px;
+  top:10px
+}
+
+.bubble-wrap[from="me"] .bubble:before{
+  left:auto;
+  right:-6px;
+}
+
+.bubble:after{
+  content:"";
+  background:black;
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  border-radius:10px;
+}
+
+.bubble > span {
+  color:white;
+  position:relative;
+  /* makes text pop*/
+  z-index: 101;
+}
+
+.bubble-name{
+  position: absolute;
+  color: white;
+  top: -5px;
+  font-size:10px;
+  left: 30px;
 }
