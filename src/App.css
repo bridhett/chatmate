@@ -110,18 +110,20 @@ body {
   height: calc(100% - 138px);
 }
 
-.bubble-wrap{
+.bubble-wrap {
   width:100%;
   padding:8px 20px;
-  display:flex;
+  display: flex;
+  justify-content: flex-end;
   position: relative;
+  right: 30px;
 }
 
 .bubble-wrap[from="me"] {
-  flex-direction:row-reverse;
+  flex-direction: row-reverse;
 }
 
-.bubble{
+.bubble {
   border-radius:11px;
   padding: 8px 12px;
   font-size: 14px;
@@ -149,7 +151,7 @@ body {
   right:-6px;
 }
 
-.bubble:after{
+.bubble:after {
   content:"";
   background:black;
   position:absolute;
@@ -164,16 +166,41 @@ body {
   z-index: 101;
 }
 
-.bubble-name{
+.bubble-name { 
   position: absolute;
   color: white;
   top: -15px;
   font-size:10px;
-  left: 20px;
+  right: 0;
 }
 
 .username {
   font-size: 20px;
   padding-top: 40px;
   padding-right: 40px;
+}
+
+.name-input {
+  outline: none;
+  font-size: 15px;
+  width: 60%;
+  height: 40%;
+  border-radius: 10px;
+  border: 0.5px solid black;
+  padding-left: 10px;
+  background: none;
+  color: white;
+}
+
+.name-button {
+  font-size: 15px;
+  outline: none;
+  border-radius: 10px;
+  border: none;
+  background: none;
+}
+
+.name-button:hover {
+  background: black;
+  color: white;
 }
