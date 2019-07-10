@@ -3,6 +3,9 @@ import './App.css';
 import logo from './logo2.png';
 import TextInput from './TextInput.js'
 import NamePicker from './NamePicker.js'
+import * as firebase from 'firebase/app'
+import 'firebase/firestore'
+import 'firebase/storage'
 
 class App extends React.Component {
   
@@ -12,19 +15,54 @@ class App extends React.Component {
     editName: false,
   }
 
-  gotMessage = (m) => {
-    const message = {
-      text: m,
-      from: this.state.name
+  componentWillMount() {
+    var name = localStorage.getItem('name')
+    if(name) {
+      this.setState({name})
     }
-    // ... spread operator takes takes everything in messages array and adds m which is the new message
-    var newMessagesArray = [...this.state.messages, message]
-    this.setState({messages: newMessagesArray})
-    // same as this.setState({messages: [...this.state.messages, m]})
+
+    firebase.initializeApp({
+      apiKey: "AIzaSyBopV3KcNrYBoVW1_fMxO2_4Y7wOc1eCbA",
+      authDomain: "chatmate-29d54.firebaseapp.com",
+      projectId: "chatmate-29d54",
+      storageBucket: "chatmate-29d54.appspot.com",
+    });
+    
+    this.db = firebase.firestore();
+
+    this.db.collection("messages").onSnapshot((snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+          //console.log(change.doc.data())
+          this.receive(change.doc.data())
+        }
+      })
+    })
+  }
+
+  receive = (m) => {
+    const messages = [m, ...this.state.messages]
+    messages.sort((a,b)=>b.ts-a.ts)
+    this.setState({messages})
+  }
+
+  send = (m) => {
+    this.db.collection("messages").add({
+      ...m,
+      from: this.state.name || 'No name',
+      ts: Date.now()
+    })
+  }
+
+  setEditName = (editName) => {
+    if(!editName) {
+      localStorage.setItem('name', this.state.name)
+    }
+    this.setState({editName})
   }
 
   render() {
-    var {messages} = this.state
+    var {messages, name, editName} = this.state
     console.log(messages)
     return (
       <div className="App">
@@ -34,22 +72,24 @@ class App extends React.Component {
           hatmate
           </div>
           <NamePicker 
-          name={this.state.name}
-          editName={this.state.editName}
+          name={name}
+          editName={editName}
           changeName={name=> this.setState({name})}
-          setEditName={editName=> this.setState({editName})}/>
+          setEditName={this.setEditName}
+          />
       </header>
       <main className="messages">
         {messages.map((m, i)=>{
-          return (<div key={i} className="bubble-wrap">
+          return (<div key={i} className="bubble-wrap"
+          from={m.from===name ? "me" : "you"}>
+            {m.from!==name && <div className="bubble-name">{m.from}</div>}
             <div className="bubble">
-              <div className="bubble-name">{m.from}</div>
               <span>{m.text}</span>
             </div>
           </div>)
         })}
       </main>
-        <TextInput sendMessage={this.gotMessage} />
+        <TextInput sendMessage={text=> this.send({text})} />
       </div>
     );
   }
