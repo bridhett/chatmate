@@ -70,7 +70,7 @@ body {
 }
 
 .text-input > input {
-  width: calc(100% - 50px);
+  width:calc(100% - 50px);
   height: 60%;
   font-size: 12px;
   color: white;
