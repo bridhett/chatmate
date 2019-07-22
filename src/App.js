@@ -7,6 +7,7 @@ import * as firebase from 'firebase/app'
 import 'firebase/firestore'
 import 'firebase/storage'
 import Camera from 'react-snap-pic'
+import Div100vh from 'react-div-100vh'
 
 class App extends React.Component {
   
@@ -34,12 +35,24 @@ class App extends React.Component {
 
     this.db.collection("messages").onSnapshot((snapshot) => {
       snapshot.docChanges().forEach((change) => {
-        if (change.type === "added") {
+        if (change.type==='added') {
           //console.log(change.doc.data())
-          this.receive(change.doc.data())
+          this.receive({
+            ...change.doc.data(),
+            id: change.doc.id
+          })
+        }
+        if (change.type==='removed'){
+          this.remove(change.doc.id)
         }
       })
     })
+  }
+
+  remove = (id) => {
+    var msgs = [...this.state.messages]
+    var messages = msgs.filter(m=> m.id!==id)
+    this.setState({messages})
   }
 
   receive = (m) => {
@@ -63,18 +76,29 @@ class App extends React.Component {
     this.setState({editName})
   }
 
-  takePicture = (img) => {
-    console.log(img)
+  takePicture = async (img) => {
     this.setState({showCamera:false})
-}
+    const imgID = Math.random().toString(36).substring(7);
+    var storageRef = firebase.storage().ref();
+    var ref = storageRef.child(imgID+'.jpg');
+    await ref.putString(img, 'data_url')
+    this.send({img: imgID})
+  }
+
+  deleteMessage = (m) => {
+    var {name} = this.state
+    if(name === m.from || name === 'Bridhett') {
+      this.db.collection('messages').doc(m.id).delete()
+    }
+  }
 
   render() {
-    var {messages, name, editName} = this.state
+    var {messages, name, editName, showCamera} = this.state
     console.log(messages)
     return (
-      <div className="App">
+      <Div100vh className="App">
         <header className="header">
-          <div className="app-title">
+          <div style={{display:'flex', alignItems:'center'}}>
           <img src={logo} alt="logo" className="logo" />
           hatmate
           </div>
@@ -87,26 +111,34 @@ class App extends React.Component {
       </header>
       <main className="messages">
         {messages.map((m, i)=>{
-          return <Message key={i} m={m} name={name} />
+          return (<Message key={i} m={m} name={name} 
+            onClick={()=> this.deleteMessage(m)}
+          />)
         })}
       </main>
         <TextInput sendMessage={text=> this.send({text})} 
          showCamera={()=>this.setState({showCamera:true})}
         />
-        {this.state.showCamera && <Camera takePicture={this.takePicture} />}
-      </div>
+        {showCamera && <Camera takePicture={this.takePicture} />}
+      </Div100vh>
     );
   }
 }
+
 export default App;
 
+const bucket = 'https://firebasestorage.googleapis.com/v0/b/chatmate-29d54.appspot.com/o/'
+const suffix = '.jpg?alt=media'
+
 function Message(props) {
-  var {m, name} = props
+  var {m, name, onClick} = props
   return(<div className="bubble-wrap"
-  from={m.from===name ? "me" : "you"}>
+  from={m.from===name ? "me" : "you"}
+  onClick={onClick}>
     {m.from!==name && <div className="bubble-name">{m.from}</div>}
     <div className="bubble">
       <span>{m.text}</span>
+      {m.img && <img alt="pic" src={bucket+m.img+suffix} />}
     </div>
   </div>)
 }
